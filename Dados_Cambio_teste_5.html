@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <title>Obtenção de Dados de Câmbio</title>
+        <style>
+            .pagina {
+                font-family: sans-serif;
+                display: grid;
+                width: 100%;
+                height: 100%;
+                grid-template-areas: "cab cab"
+                                     "bar princ"
+                                     "bar rod";
+                grid-template-rows: 1fr 6fr 1fr;
+                grid-template-columns: 2fr 6fr;
+                border-radius:10px
+            }
+			
+			.img{
+				left: 120px; 
+				position: relative;
+			}
+			html, body {
+				margin: 0;
+				padding: 0;
+			}
+			
+            .pagina > cabecalho {
+                grid-area: cab; 
+                background-color: pink; 
+                border: 1px solid gray;
+            }
+            .pagina > menu {
+                grid-area: bar; 
+                margin: 0; 
+                padding: 0;
+                border-left: 1px solid gray;
+            }
+            .pagina > principal {
+                grid-area: princ;
+                border-right: 1px solid gray;
+                border-left: 1px solid gray;
+            }
+            .pagina > rodape {
+                grid-area: rod; 
+                border: 1px solid gray;
+            }
+            h2 {line-height:100px;}
+            .botao {
+                background-color: pink; 
+                color: rgb(224, 27, 106); 
+                text-align: center; 
+                height: 30px; 
+                border-radius: 5px;
+            }
+            .botao:hover {
+                background-color:rgb(224, 27, 106); 
+                color:pink;
+            }
+            .box {
+                width: 300px;
+                height: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="pagina">
+            <cabecalho>
+				<p style="float: left;"><img class ="img" src="https://static.wikia.nocookie.net/jedipedia/images/2/2b/Credits.png/revision/latest?cb=20080623234636&path-prefix=de" height="80px" width="80px"></p>
+				<center><h2>Plataforma de Checagem de Dados de Câmbio do Império Intergaláctico</h2></center>
+			</cabecalho>
+			<div class="box">
+                <menu>
+                    <h3>Obtenção de Dados de Câmbio</h3>
+                        <label for="inicio">Período Inicial</label>
+                        <input type="date" id="dateIni">
+                        <p>
+                        <label for="fim">Período Final</label>
+                        <input type="date" id="dateFim">
+                        <p>
+                        <h4>Selecione a(s) moeda(s):</h4>
+                        <input type="checkbox" class="moedas" name="dolar" checked>
+                        <label for="dolar">Dólar Americano</label>
+                        <p>
+                        <input type="checkbox" class="moedas" name="euro" checked>
+                        <label for="euro">Euro</label>
+                        <p>
+                        <input type="checkbox" class="moedas" name="libra" checked>
+                        <label for="libra">Libra Esterlina</label>
+                        <p>
+                        <h4>Selecione o tipo de saída de dados:</h4>
+                        <input type="radio" name="saida" value="tab">Tabela
+                        <input type="radio" name="saida" value="graf">Gráfico de Linhas
+                        </p>
+                        <input id="submit" type="submit" value="Mostrar" class="botao">
+                </menu>
+            </div>
+            <principal>
+                  <div id="grafico" style="width: 900px; height: 500px"></div>
+                  <div id="tabela"></div>
+            </principal>
+            <rodape>
+                <center>
+                    <button type="button" onclick="print()" class="botao">SOBRE</button>
+                    <button type="button" onclick="print1()" class="botao">AJUDA</button>
+                </center>
+                <div id="sobre"> </div>
+                <div id="ajuda"> </div>
+            </rodape>
+
+        </div>
+        
+        <script>
+            function converterData(date){
+                // converte um string de yyyy-mm-dd para mm-dd-yyyy
+                const [ano, mes, dia] = date.split("-")
+                return [mes, dia, ano].join("-")
+            }
+            
+            // Mostra gráfico na tela
+            function draw($dados){
+                const tagDestino = document.getElementById('grafico');
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawChart);
+
+                function drawChart() {
+                var data = google.visualization.arrayToDataTable($dados);
+                var options = {
+                    title: 'Cotação',
+                    curveType: 'function',
+                    legend: { position: 'bottom' }
+                };
+
+                var chart = new google.visualization.LineChart(tagDestino);
+
+                chart.draw(data, options);
+                }
+            }
+            
+            function drawCharts(dados){
+
+                draw([["data", "cotacao"],...dados])
+            }
+            
+            const convertToCharts = json => json.map(objeto => [objeto.dataHoraCotacao, objeto.cotacaoVenda])
+
+			var servidor = 'https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios';
+			
+			function print(){
+				{document.getElementById('sobre').innerHTML = 'Sobre nós: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';}
+			}
+			
+			function print1(){
+				{document.getElementById('ajuda').innerHTML = 'FAQ: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.';}
+			}
+			
+			function replaceUrl(dataInicial,dataFinal,moeda){
+                return `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@moeda='${moeda}'&@dataInicial='${dataInicial}'&@dataFinalCotacao='${dataFinal}'&$top=10000&$skip=0&$format=json&$select=cotacaoVenda,dataHoraCotacao`
+            }
+
+            function fetchData(dataInicial,dataFinal,moeda){
+            const url = replaceUrl(dataInicial,dataFinal,moeda)
+
+                console.log(url)
+
+                const dados = fetch(url)
+                .then(res => res.json())
+                .then(dados => {
+                    const dadosFiltrados = convertToCharts(dados.value)
+                    drawCharts(dadosFiltrados)
+                })
+            
+            }
+            
+            function execute(){
+
+
+                const dataInicial = document.getElementById("dateIni").value
+                const dataFinal = document.getElementById("dateFim").value
+                
+                console.log(dataInicial,dataFinal)
+
+                fetchData(converterData(dataInicial),converterData(dataFinal),'USD')
+				fetchData(converterData(dataInicial),converterData(dataFinal),'EUR')
+				fetchData(converterData(dataInicial),converterData(dataFinal),'GBP')
+
+            }
+
+            const botao = document.getElementById("submit")
+            botao.addEventListener("click",execute)
+        </script>
+    </body>
+</html>
